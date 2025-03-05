@@ -6,19 +6,22 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
-    public static Player Instance {get; private set;}
+    public static Player Instance { get; private set; }
     [SerializeField] private float moveSpeed = 5f;
 
     private Rigidbody2D rb;
 
-    private float minMovingSpeed = 0.1f;
-    private bool isRunning = false;
+    private bool isRunningToRight = false;
+    private bool isRunningToLeft = false;
+    private bool isRunningToUp = false;
+    private bool isRunningToDown = false;
 
     private void Awake()
     {
         Instance = this;
         rb = GetComponent<Rigidbody2D>();
     }
+
     void Start()
     {
 
@@ -31,8 +34,14 @@ public class Player : MonoBehaviour
 
     private void PlayerMove()
     {
-Vector2 inputVector = new Vector2(0, 0);
+        Vector2 inputVector = new Vector2(0, 0);
 
+        MoveFromKey(inputVector);
+
+    }
+
+    private void MoveFromKey(Vector2 inputVector)
+    {
         if (Input.GetKey(KeyCode.W))
         {
             inputVector.y = 1f;
@@ -54,17 +63,69 @@ Vector2 inputVector = new Vector2(0, 0);
 
         rb.MovePosition(rb.position + inputVector * (moveSpeed * Time.fixedDeltaTime));
 
-        if (Mathf.Abs(inputVector.x) > minMovingSpeed || Mathf.Abs(inputVector.y) > minMovingSpeed)
+        SwitchAnimation(inputVector);
+    }
+
+    private void SwitchAnimation(Vector2 inputVector)
+    {
+        if (inputVector.x > 0f)
         {
-            isRunning = true;
+            isRunningToRight = true;
+
+            isRunningToLeft = false;
+            isRunningToUp = false;
+            isRunningToDown = false;
+        }
+        else if (inputVector.x < 0f)
+        {
+            isRunningToLeft = true;
+
+            isRunningToRight = false;
+            isRunningToUp = false;
+            isRunningToDown = false;
+        }
+        else if (inputVector.y > 0f)
+        {
+            isRunningToUp = true;
+
+            isRunningToRight = false;
+            isRunningToLeft = false;
+            isRunningToDown = false;
+        }
+        else if (inputVector.y < 0f)
+        {
+            isRunningToDown = true;
+
+            isRunningToRight = false;
+            isRunningToLeft = false;
+            isRunningToUp = false;
         }
         else
         {
-            isRunning = false;
+            isRunningToRight = false;
+            isRunningToLeft = false;
+            isRunningToUp = false;
+            isRunningToDown = false;
         }
     }
 
-    public bool IsRunning() {
-        return isRunning;
+    public bool IsRunningToR()
+    {
+        return isRunningToRight;
+    }
+
+    public bool IsRunningToL()
+    {
+        return isRunningToLeft;
+    }
+
+    public bool IsRunningToU()
+    {
+        return isRunningToUp;
+    }
+
+    public bool IsRunningToD()
+    {
+        return isRunningToDown;
     }
 }
